@@ -110,14 +110,17 @@ if (contactForm) {
     contactForm.addEventListener("submit", function(event) {
         const name = document.getElementById("name").value.trim();
         const email = document.getElementById("email").value.trim();
+        const subject = document.getElementById("subject").value.trim();
         const message = document.getElementById("message").value.trim();
         const nameError = document.getElementById("nameError");
         const emailError = document.getElementById("emailError");
+        const subjectError = document.getElementById("subjectError");
         const messageError = document.getElementById("messageError");
         const formMessage = document.getElementById("formMessage");
 
         nameError.textContent = "";
         emailError.textContent = "";
+        subjectError.textContent = "";
         messageError.textContent = "";
         formMessage.textContent = "";
 
@@ -127,6 +130,8 @@ if (contactForm) {
         const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
         if (email === "") { emailError.textContent = "Please enter your email."; valid = false; }
         else if (!emailPattern.test(email)) { emailError.textContent = "Please enter a valid email address."; valid = false; }
+
+        if (subject === "") { subjectError.textContent = "Please enter a subject."; valid = false; }
 
         if (message === "") { messageError.textContent = "Please enter your message."; valid = false; }
 
