@@ -5,7 +5,7 @@ if (time() - ($_SESSION['last'] ?? time()) > 1800) { $_SESSION = []; session_des
 $_SESSION['last'] = time();
 
 $cats = ['web', 'networking', 'animation'];
-$tabs = ['overview' => 'Overview', 'messages' => 'Messages', 'projects' => 'Projects', 'skills' => 'Skills', 'resume' => 'Resume', 'account' => 'Account'];
+$tabs = ['overview' => 'Overview', 'profile' => 'Profile', 'messages' => 'Messages', 'projects' => 'Projects', 'skills' => 'Skills', 'resume' => 'Resume', 'account' => 'Account'];
 $tables = ['project' => 'projects', 'skill' => 'skills', 'resume' => 'resume_items', 'message' => 'messages'];
 
 function flash(string $m, bool $ok = true): void { $_SESSION['flash'] = [$ok, $m]; }
@@ -60,6 +60,17 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $vals = [$t('label', 50), $t('title', 150), $t('description', 1000)];
         if ($id) { $pdo->prepare('UPDATE resume_items SET label=?, title=?, description=? WHERE id=?')->execute([...$vals, $id]); flash('Resume item updated.'); }
         else { $pdo->prepare('INSERT INTO resume_items (label, title, description) VALUES (?,?,?)')->execute($vals); flash('Resume item added.'); }
+    } elseif ($a === 'save_profile') {
+        $email = $t('email', 150);
+        if ($email !== '' && !filter_var($email, FILTER_VALIDATE_EMAIL)) { flash('Please enter a valid email address.', false); header('Location: index.php?tab=profile'); exit; }
+        if ($t('full_name', 150) === '') { flash('Name is required.', false); header('Location: index.php?tab=profile'); exit; }
+        $file = $_FILES['image'] ?? ['error' => UPLOAD_ERR_NO_FILE];
+        $img = null;
+        if ($file['error'] !== UPLOAD_ERR_NO_FILE && ($img = save_image($file)) === null) { header('Location: index.php?tab=profile'); exit; }
+        if ($img) drop_image((string)$pdo->query('SELECT profile_image FROM profile WHERE id = 1')->fetchColumn());
+        $pdo->prepare('UPDATE profile SET full_name=?, tagline=?, intro=?, biography=?, email=?, facebook=?, instagram=?, profile_image=COALESCE(?, profile_image) WHERE id=1')
+            ->execute([$t('full_name', 150), $t('tagline', 255), $t('intro', 1000), $t('biography', 2000), $email, $t('facebook', 150), $t('instagram', 150), $img]);
+        flash('Profile updated.');
     } elseif ($a === 'toggle_read') {
         $pdo->prepare('UPDATE messages SET is_read = 1 - is_read WHERE id = ?')->execute([$id]);
     } elseif ($a === 'delete' && isset($tables[$_POST['what'] ?? ''])) {
@@ -185,6 +196,23 @@ $self = 'index.php?tab=' . $tab;
 <label>Title<input name="title" required maxlength="150" value="<?= v($edit, 'title') ?>"></label>
 <label>Description<textarea name="description" rows="3" required maxlength="1000"><?= v($edit, 'description') ?></textarea></label>
 <div class="actions"><button class="btn" type="submit"><?= $edit ? 'Save changes' : 'Add resume item' ?></button><?php if ($edit): ?><a class="ghost" href="index.php?tab=resume">Cancel</a><?php endif; ?></div>
+</form>
+
+<?php elseif ($tab === 'profile'): $pr = profile(); ?>
+<form method="post" enctype="multipart/form-data" class="card form"><?= csrf_field() ?>
+<input type="hidden" name="action" value="save_profile"><input type="hidden" name="tab" value="profile">
+<h3>Personal information</h3>
+<label>Full name<input name="full_name" required maxlength="150" value="<?= e($pr['full_name']) ?>"></label>
+<label>Tagline (typed on the home page)<input name="tagline" maxlength="255" value="<?= e($pr['tagline']) ?>"></label>
+<label>Introduction (home page)<textarea name="intro" rows="3" maxlength="1000"><?= e($pr['intro']) ?></textarea></label>
+<label>Biography (About page)<textarea name="biography" rows="5" maxlength="2000"><?= e($pr['biography']) ?></textarea></label>
+<label>Email<input type="email" name="email" maxlength="150" value="<?= e($pr['email']) ?>"></label>
+<label>Facebook<input name="facebook" maxlength="150" value="<?= e($pr['facebook']) ?>"></label>
+<label>Instagram<input name="instagram" maxlength="150" value="<?= e($pr['instagram']) ?>"></label>
+<label>Profile picture (leave empty to keep the current one) · JPG, PNG, WEBP or GIF, max 2 MB
+<input type="file" name="image" accept="image/png,image/jpeg,image/webp,image/gif"></label>
+<img class="thumb" style="width:90px;height:90px;border-radius:50%" src="../<?= e($pr['profile_image']) ?>" alt="Current profile picture">
+<button class="btn" type="submit">Save profile</button>
 </form>
 
 <?php else: ?>

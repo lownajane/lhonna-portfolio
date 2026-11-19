@@ -48,9 +48,10 @@ include 'includes/header.php';
 		<div class="contact-info">
 			<h2>Get in Touch</h2>
 			<p>Feel free to contact me through email or social media.</p>
-			<div class="contact-detail">📧 <span>lhonnabohol@gmail.com</span></div>
-			<div class="contact-detail">📱 <span>Facebook: Lhonna Jane Dantes Bohol</span></div>
-			<div class="contact-detail">📱 <span>Instagram: lhnna_122804</span></div>
+			<?php $pr = profile(); ?>
+			<?php if ($pr['email'] !== ''): ?><div class="contact-detail">📧 <span><?= e($pr['email']) ?></span></div><?php endif; ?>
+			<?php if ($pr['facebook'] !== ''): ?><div class="contact-detail">📱 <span>Facebook: <?= e($pr['facebook']) ?></span></div><?php endif; ?>
+			<?php if ($pr['instagram'] !== ''): ?><div class="contact-detail">📱 <span>Instagram: <?= e($pr['instagram']) ?></span></div><?php endif; ?>
 		</div>
 		<form id="contactForm" class="contact-form" method="post" action="contact.php" novalidate>
 			<?= csrf_field() ?>

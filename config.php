@@ -34,3 +34,12 @@ function csrf_check(): void {
 }
 function is_admin(): bool { return !empty($_SESSION['admin_id']); }
 function require_admin(): void { if (!is_admin()) { header('Location: login.php'); exit; } }
+
+function profile(): array {
+    static $p = null;
+    if ($p === null) {
+        $p = db()->query('SELECT * FROM profile WHERE id = 1')->fetch() ?: [];
+        $p += ['full_name' => '', 'tagline' => '', 'intro' => '', 'biography' => '', 'email' => '', 'facebook' => '', 'instagram' => '', 'profile_image' => 'profile.jpg.webp'];
+    }
+    return $p;
+}

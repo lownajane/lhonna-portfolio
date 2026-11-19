@@ -6,6 +6,12 @@ $cards = db()->query('SELECT heading, body FROM about_sections ORDER BY sort_ord
 		<p>A little introduction about who I am, my education, goals, and interests.</p>
 	</section>
 	<section class="content-section">
+		<?php if (profile()['biography'] !== ''): ?>
+		<div class="about-card">
+			<h2>Biography</h2>
+			<p><?= e(profile()['biography']) ?></p>
+		</div>
+		<?php endif; ?>
 		<?php foreach ($cards as $c): ?>
 		<div class="about-card">
 			<h2><?= e($c['heading']) ?></h2>

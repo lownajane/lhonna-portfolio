@@ -37,7 +37,7 @@ const typingText = document.getElementById("typingText");
 
 if (typingText) {
 
-    const text = "If it's meant to be, it will be.";
+    const text = typingText.dataset.text || "If it's meant to be, it will be.";
 
     let index = 0;
 
