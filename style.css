@@ -547,3 +547,6 @@ body.dark-mode .nav-links {
     }
 }
 
+
+#formMessage { color: green; }
+.admin-wrap { color: inherit; }
