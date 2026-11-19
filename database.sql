@@ -17,6 +17,7 @@ CREATE TABLE skills (
   icon VARCHAR(10) NOT NULL,
   name VARCHAR(100) NOT NULL,
   description VARCHAR(255) NOT NULL,
+  category VARCHAR(50) NOT NULL DEFAULT 'Other',
   sort_order INT NOT NULL DEFAULT 0
 );
 CREATE TABLE projects (
@@ -91,3 +92,7 @@ INSERT INTO profile (id, full_name, tagline, intro, biography, email, facebook, 
  'lhonnabohol@gmail.com', 'Lhonna Jane Dantes Bohol', 'lhnna_122804', 'profile.jpg.webp');
 -- The biography now lives in the profile table, so remove the duplicate About card.
 DELETE FROM about_sections WHERE heading = 'Background';
+
+UPDATE skills SET category = 'Technical' WHERE name IN ('HTML', 'CSS', 'JavaScript');
+UPDATE skills SET category = 'Creative' WHERE name IN ('Graphic Design', 'Animation');
+UPDATE skills SET category = 'Soft skills' WHERE name IN ('Teamwork', 'Storytelling');
