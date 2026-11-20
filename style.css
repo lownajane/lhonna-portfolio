@@ -547,11 +547,3 @@ body.dark-mode .nav-links {
     }
 }
 
-
-#formMessage { color: green; }
-.admin-wrap { color: inherit; }
-
-.hp { position: absolute; left: -9999px; width: 1px; height: 1px; overflow: hidden; }
-
-.skill-group { max-width: 1100px; margin: 25px auto 0; padding: 0 20px; color: #1F5C42; }
-body.dark-mode .skill-group { color: #8BC9A8; }
